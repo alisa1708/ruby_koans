@@ -40,7 +40,7 @@ class AboutArrays < Neo::Koan
     assert_equal [:and, :jelly], array[2,2]
     assert_equal [:and, :jelly], array[2,20]
     assert_equal [], array[4,0]
-    assert_equal nil, array[4,100]
+    assert_equal [], array[4,100]
     assert_equal nil, array[5,0]
   end
 
@@ -80,4 +80,6 @@ class AboutArrays < Neo::Koan
     assert_equal :first, shifted_value
     assert_equal [1, 2], array
   end
+
 end
+
