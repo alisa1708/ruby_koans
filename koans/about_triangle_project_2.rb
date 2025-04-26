@@ -1,16 +1,26 @@
-require File.expand_path(File.dirname(__FILE__) + '/neo')
-
-# You need to write the triangle method in the file 'triangle.rb'
-require './triangle.rb'
-
-class AboutTriangleProject2 < Neo::Koan
-  # The first assignment did not talk about how to handle errors.
-  # Let's handle that part now.
-  def test_illegal_triangles_throw_exceptions
-    assert_raise(TriangleError) do triangle(0, 0, 0) end
-    assert_raise(TriangleError) do triangle(3, 4, -5) end
-    assert_raise(TriangleError) do triangle(1, 1, 3) end
-    assert_raise(TriangleError) do triangle(2, 4, 2) end
-    # HINT: for tips, see http://stackoverflow.com/questions/3834203/ruby-koan-151-raising-exceptions
+# triangle.rb
+def triangle(a, b, c)
+  sides = [a, b, c].sort
+  
+  # Проверка на неположительные стороны
+  if sides.any? { |side| side <= 0 }
+    raise TriangleError, "Sides must be positive numbers"
   end
+  
+  # Проверка неравенства треугольника
+  unless sides[0] + sides[1] > sides[2]
+    raise TriangleError, "Does not satisfy triangle inequality"
+  end
+  
+  # Определение типа треугольника
+  if sides.uniq.size == 1
+    :equilateral
+  elsif sides.uniq.size == 2
+    :isosceles
+  else
+    :scalene
+  end
+end
+
+class TriangleError < StandardError
 end
