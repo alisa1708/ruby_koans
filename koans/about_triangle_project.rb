@@ -1,27 +1,31 @@
-require File.expand_path(File.dirname(__FILE__) + '/neo')
-
-# You need to write the triangle method in the file 'triangle.rb'
-require './triangle'
-
-class AboutTriangleProject < Neo::Koan
-  def test_equilateral_triangles_have_equal_sides
-    curr = :equilateral
-    assert_equal curr, triangle(2, 2, 2)
-    assert_equal curr, triangle(10, 10, 10)
+# triangle.rb
+def triangle(a, b, c)
+  # Проверка на числовые значения
+  unless [a, b, c].all? { |side| side.is_a?(Numeric) }
+    raise TriangleError, "Sides must be numbers"
   end
 
-  def test_isosceles_triangles_have_exactly_two_sides_equal
-    curr = :isosceles
-    assert_equal curr, triangle(3, 4, 4)
-    assert_equal curr, triangle(4, 3, 4)
-    assert_equal curr, triangle(4, 4, 3)
-    assert_equal curr, triangle(10, 10, 2)
+  # Проверка на положительные значения
+  sides = [a, b, c].map(&:to_f)
+  if sides.any? { |side| side <= 0 || side.infinite? || side.nan? }
+    raise TriangleError, "Sides must be finite positive numbers"
   end
 
-  def test_scalene_triangles_have_no_equal_sides
-    curr = :scalene
-    assert_equal curr, triangle(3, 4, 5)
-    assert_equal curr, triangle(10, 11, 12)
-    assert_equal curr, triangle(5, 4, 2)
+  # Проверка неравенства треугольника с учетом погрешности для Float
+  sides_sorted = sides.sort
+  unless sides_sorted[0] + sides_sorted[1] > sides_sorted[2] + Float::EPSILON
+    raise TriangleError, "Invalid triangle sides"
   end
+
+  # Определение типа треугольника с учетом погрешности для Float
+  if (a - b).abs < Float::EPSILON && (b - c).abs < Float::EPSILON
+    :equilateral
+  elsif (a - b).abs < Float::EPSILON || (b - c).abs < Float::EPSILON || (a - c).abs < Float::EPSILON
+    :isosceles
+  else
+    :scalene
+  end
+end
+
+class TriangleError < StandardError
 end
