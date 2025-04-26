@@ -1,21 +1,27 @@
-# triangle.rb
-def triangle(a, b, c)
-  # Проверка на валидность треугольника
-  sides = [a, b, c].sort
-  unless sides[0] + sides[1] > sides[2]
-    raise TriangleError, "Invalid triangle sides"
+require File.expand_path(File.dirname(__FILE__) + '/neo')
+
+# You need to write the triangle method in the file 'triangle.rb'
+require './triangle'
+
+class AboutTriangleProject < Neo::Koan
+  def test_equilateral_triangles_have_equal_sides
+    curr = :equilateral
+    assert_equal curr, triangle(2, 2, 2)
+    assert_equal curr, triangle(10, 10, 10)
   end
 
-  # Определение типа треугольника
-  if a == b && b == c
-    :equilateral
-  elsif a == b || b == c || a == c
-    :isosceles
-  else
-    :scalene
+  def test_isosceles_triangles_have_exactly_two_sides_equal
+    curr = :isosceles
+    assert_equal curr, triangle(3, 4, 4)
+    assert_equal curr, triangle(4, 3, 4)
+    assert_equal curr, triangle(4, 4, 3)
+    assert_equal curr, triangle(10, 10, 2)
   end
-end
 
-# Класс для обработки ошибок невалидного треугольника
-class TriangleError < StandardError
+  def test_scalene_triangles_have_no_equal_sides
+    curr = :scalene
+    assert_equal curr, triangle(3, 4, 5)
+    assert_equal curr, triangle(10, 11, 12)
+    assert_equal curr, triangle(5, 4, 2)
+  end
 end

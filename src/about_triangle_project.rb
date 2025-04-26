@@ -1,24 +1,24 @@
-require File.expand_path(File.dirname(__FILE__) + '/neo')
-
-# You need to write the triangle method in the file 'triangle.rb'
-require './triangle'
-
-class AboutTriangleProject < Neo::Koan
-  def test_equilateral_triangles_have_equal_sides
-    assert_equal :equilateral, triangle(2, 2, 2)
-    assert_equal :equilateral, triangle(10, 10, 10)
+# triangle.rb
+def triangle(a, b, c)
+  # Проверка на недопустимые значения сторон
+  sides = [a, b, c]
+  if sides.any? { |side| side <= 0 }
+    raise TriangleError, "Sides must be positive numbers"
   end
 
-  def test_isosceles_triangles_have_exactly_two_sides_equal
-    assert_equal :isosceles, triangle(3, 4, 4)
-    assert_equal :isosceles, triangle(4, 3, 4)
-    assert_equal :isosceles, triangle(4, 4, 3)
-    assert_equal :isosceles, triangle(10, 10, 2)
+  # Проверка неравенства треугольника
+  sides_sorted = sides.sort
+  unless sides_sorted[0] + sides_sorted[1] > sides_sorted[2]
+    raise TriangleError, "Invalid triangle sides"
   end
 
-  def test_scalene_triangles_have_no_equal_sides
-    assert_equal :scalene, triangle(3, 4, 5)
-    assert_equal :scalene, triangle(10, 11, 12)
-    assert_equal :scalene, triangle(5, 4, 2)
+  # Определение типа треугольника
+  case sides.uniq.size
+  when 1 then :equilateral
+  when 2 then :isosceles
+  else        :scalene
   end
+end
+
+class TriangleError < StandardError
 end
