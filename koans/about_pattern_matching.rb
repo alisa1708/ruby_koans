@@ -10,7 +10,7 @@ class AboutPatternMatching < Neo::Koan
       end
     rescue Exception => ex
       # What exception has been caught?
-      assert_equal __, ex.class
+      assert_equal NoMatchingPatternError, ex.class
     end
   end
 
@@ -22,7 +22,7 @@ class AboutPatternMatching < Neo::Koan
      :no_match
     end
 
-    assert_equal __, result
+    assert_equal :no_match, result
   end
 
   # ------------------------------------------------------------------
@@ -41,14 +41,13 @@ class AboutPatternMatching < Neo::Koan
   end
 
   def test_value_pattern
-    assert_equal __, value_pattern(0)
-    assert_equal __, value_pattern(5)
-    assert_equal __, value_pattern(100)
-    assert_equal __, value_pattern('Not a Number!')
+    assert_equal :match_exact_value, value_pattern(0)
+    assert_equal :match_in_range, value_pattern(5)
+    assert_equal :match_with_class, value_pattern(100)
+    assert_equal :no_match, value_pattern('Not a Number!')
   end
 
   # ------------------------------------------------------------------
-  # This pattern will bind variable to the value
 
   def variable_pattern_with_binding(variable)
     case 0
@@ -60,12 +59,10 @@ class AboutPatternMatching < Neo::Koan
   end
 
   def test_variable_pattern_with_binding
-    assert_equal __, variable_pattern_with_binding(1)
+    assert_equal 0, variable_pattern_with_binding(1)
   end
 
   # ------------------------------------------------------------------
-
-  # We can pin the value of the variable with ^
 
   def variable_pattern_with_pin(variable)
     case 0
@@ -77,12 +74,10 @@ class AboutPatternMatching < Neo::Koan
   end
 
   def test_variable_pattern_with_pin
-    assert_equal __, variable_pattern_with_pin(1)
+    assert_equal :no_match, variable_pattern_with_pin(1)
   end
 
   # ------------------------------------------------------------------
-
-  # We can drop values from pattern
 
   def pattern_with_dropping(variable)
     case variable
@@ -94,13 +89,11 @@ class AboutPatternMatching < Neo::Koan
   end
 
   def test_pattern_with_dropping
-    assert_equal __, pattern_with_dropping(['I will not be checked', 2])
-    assert_equal __, pattern_with_dropping(['I will not be checked', 'But I will!'])
+    assert_equal :match, pattern_with_dropping(['I will not be checked', 2])
+    assert_equal :no_match, pattern_with_dropping(['I will not be checked', 'But I will!'])
   end
 
   # ------------------------------------------------------------------
-
-  # We can use logical *or* in patterns
 
   def alternative_pattern(variable)
     case variable
@@ -112,16 +105,13 @@ class AboutPatternMatching < Neo::Koan
   end
 
   def test_alternative_pattern
-    assert_equal __, alternative_pattern(0)
-    assert_equal __, alternative_pattern(false)
-    assert_equal __, alternative_pattern(nil)
-    assert_equal __, alternative_pattern(4)
+    assert_equal :match, alternative_pattern(0)
+    assert_equal :match, alternative_pattern(false)
+    assert_equal :match, alternative_pattern(nil)
+    assert_equal :no_match, alternative_pattern(4)
   end
 
   # ------------------------------------------------------------------
-
-  # As pattern binds the variable to the value if pattern matches
-  # pat: pat => var
 
   def as_pattern
     a = 'First I was afraid'
@@ -135,13 +125,10 @@ class AboutPatternMatching < Neo::Koan
   end
 
   def test_as_pattern
-    assert_equal __, as_pattern
+    assert_equal 'I was petrified', as_pattern
   end
 
   # ------------------------------------------------------------------
-
-  # Array pattern works with all objects that have #deconstruct method that returns Array
-  # It is useful to cut needed parts from Array-ish objects
 
   class Deconstructible
     def initialize(str)
@@ -163,14 +150,11 @@ class AboutPatternMatching < Neo::Koan
   end
 
   def test_array_pattern
-    assert_equal __, array_pattern(Deconstructible.new('abcd'))
-    assert_equal __, array_pattern(Deconstructible.new('123'))
+    assert_equal ['b', 'c'], array_pattern(Deconstructible.new('abcd'))
+    assert_equal :no_match, array_pattern(Deconstructible.new('123'))
   end
 
   # ------------------------------------------------------------------
-
-  # Hash pattern is quite the same as Array pattern, but it expects #deconsturct_keys(keys) method
-  # It works with symbol keys for now
 
   class LetterAccountant
     def initialize(str)
@@ -178,7 +162,6 @@ class AboutPatternMatching < Neo::Koan
     end
 
     def deconstruct_keys(keys)
-      # we will count number of occurrences of each key in our data
       keys.map { |key| [key, @data.count(key.to_s)] }.to_h
     end
   end
@@ -193,11 +176,10 @@ class AboutPatternMatching < Neo::Koan
   end
 
   def test_hash_pattern
-    assert_equal __, hash_pattern(LetterAccountant.new('aaabbc'))
-    assert_equal __, hash_pattern(LetterAccountant.new('xyz'))
+    assert_equal [3, 2], hash_pattern(LetterAccountant.new('aaabbc'))
+    assert_equal :no_match, hash_pattern(LetterAccountant.new('xyz'))
   end
 
-  # we can write it even shorter
   def hash_pattern_with_sugar(deconstructible_as_hash)
     case deconstructible_as_hash
     in a:, b:
@@ -208,8 +190,8 @@ class AboutPatternMatching < Neo::Koan
   end
 
   def test_hash_pattern_with_sugar
-    assert_equal __, hash_pattern_with_sugar(LetterAccountant.new('aaabbc'))
-    assert_equal __, hash_pattern_with_sugar(LetterAccountant.new('xyz'))
+    assert_equal [3, 2], hash_pattern_with_sugar(LetterAccountant.new('aaabbc'))
+    assert_equal :no_match, hash_pattern_with_sugar(LetterAccountant.new('xyz'))
   end
 
 end
