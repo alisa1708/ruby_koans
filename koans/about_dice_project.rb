@@ -6,7 +6,19 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 #   code ...
 # end
 
+
+
+
+#++
 class AboutDiceProject < Neo::Koan
+  class DiceSet
+    attr_reader :values
+    def roll(n)
+      @values = (1..n).map { rand(6) + 1 }
+    end
+  end
+
+
   def test_can_create_a_dice_set
     dice = DiceSet.new
     assert_not_nil dice
